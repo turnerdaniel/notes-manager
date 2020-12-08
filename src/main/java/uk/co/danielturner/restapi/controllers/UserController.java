@@ -1,6 +1,7 @@
 package uk.co.danielturner.restapi.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.co.danielturner.restapi.models.User;
 
@@ -11,7 +12,8 @@ public class UserController {
     private final AtomicLong id = new AtomicLong();
 
     @GetMapping("/users")
-    public User getUsers() {
-        return new User(id.incrementAndGet(), "Test", "0123456789");
+    public User getUsers(@RequestParam(value = "name", defaultValue = "Example") String name,
+                         @RequestParam(value = "number", defaultValue = "0123456789") String number) {
+        return new User(id.incrementAndGet(), name, number);
     }
 }
