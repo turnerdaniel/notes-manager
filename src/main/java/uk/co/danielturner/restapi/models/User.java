@@ -3,12 +3,12 @@ package uk.co.danielturner.restapi.models;
 public class User {
     private long id;
     private String name;
-    private String phoneNo;
+    private String number;
 
-    public User(long id, String name, String phoneNo) {
+    public User(long id, String name, String number) {
         this.id = id;
         this.name = name;
-        this.phoneNo = phoneNo;
+        this.number = number;
     }
 
     public long getId() {
@@ -27,11 +27,11 @@ public class User {
         this.name = name;
     }
 
-    public String getPhoneNo() {
-        return phoneNo;
+    public String getNumber() {
+        return number;
     }
 
-    public void setPhoneNo(String phoneNo) {
-        this.phoneNo = phoneNo;
+    public void setNumber(String number) {
+        this.number = number;
     }
 }
