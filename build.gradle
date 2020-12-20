@@ -7,7 +7,6 @@ plugins {
 
 group = 'uk.co.danielturner'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
@@ -29,5 +28,11 @@ jacocoTestReport {
 		html.enabled false
 		xml.enabled true
 		xml.destination file("${buildDir}/reports/jacoco/coverage.xml")
+	}
+}
+
+task version {
+	doLast {
+		println project.version
 	}
 }
