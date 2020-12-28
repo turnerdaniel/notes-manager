@@ -2,11 +2,11 @@ plugins {
 	id 'org.springframework.boot' version '2.4.0'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
+	id 'jacoco'
 }
 
 group = 'uk.co.danielturner'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
@@ -19,4 +19,20 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		html.enabled false
+		xml.enabled true
+		xml.destination file("${buildDir}/reports/jacoco/coverage.xml")
+	}
+}
+
+task version {
+	doLast {
+		println project.version
+	}
 }

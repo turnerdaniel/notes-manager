@@ -1,16 +1,13 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+# https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
 name: Gradle CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  build:
+  unit-test:
     name: Unit Tests
 
     runs-on: ubuntu-latest
@@ -22,7 +19,20 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.x
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./build/reports/jacoco/coverage.xml
+          flags: unittests
