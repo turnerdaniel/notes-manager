@@ -1,10 +1,10 @@
-package uk.co.danielturner.restapi;
+package uk.co.danielturner.notesmanager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RestApiApplicationTests {
+class NotesManagerApplicationTests {
 
 	@Test
 	void contextLoads() {

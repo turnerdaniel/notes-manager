@@ -1,6 +1,7 @@
-package uk.co.danielturner.restapi.controllers;
+package uk.co.danielturner.notesmanager.controllers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -12,36 +13,36 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class NoteControllerTest {
 
     @Autowired
     private MockMvc mock;
 
     @Test
-    void returnsCorrectName() throws Exception {
+    void returnsCorrectTitle() throws Exception {
         final String param = "Testing";
-        final String url = "/users?name=" + param;
+        final String url = "/create?title=" + param;
 
-        mock.perform(get(url)).andDo(print())
+        mock.perform(post(url)).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(param));
+                .andExpect(jsonPath("$.title").value(param));
     }
 
     @Test
-    void returnsCorrectNumber() throws Exception {
-        final String param = "01234";
-        final String url = "/users?number=" + param;
+    void returnsCorrectDescription() throws Exception {
+        final String param = "abcdefg";
+        final String url = "/create?description=" + param;
 
-        mock.perform(get(url)).andDo(print())
+        mock.perform(post(url)).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number").value(param));
+                .andExpect(jsonPath("$.description").value(param));
     }
 
     @Test
     void returnsDefault() throws Exception {
-        mock.perform(get("/users")).andDo(print())
+        mock.perform(post("/create")).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Example"))
-                .andExpect(jsonPath("$.number").value("0123456789"));
+                .andExpect(jsonPath("$.title").value("Add title here"))
+                .andExpect(jsonPath("$.description").value(""));
     }
 }

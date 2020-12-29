@@ -1,13 +1,13 @@
-package uk.co.danielturner.restapi;
+package uk.co.danielturner.notesmanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestApiApplication {
+public class NotesManagerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RestApiApplication.class, args);
+		SpringApplication.run(NotesManagerApplication.class, args);
 	}
 
 }
