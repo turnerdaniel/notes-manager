@@ -1,48 +1,49 @@
 package uk.co.danielturner.notesmanager.controllers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import uk.co.danielturner.notesmanager.models.Note;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class NoteControllerTest {
 
-    @Autowired
-    private MockMvc mock;
-
     @Test
-    void returnsCorrectTitle() throws Exception {
-        final String param = "Testing";
-        final String url = "/create?title=" + param;
+    void generatesNoteWithUniqueId() {
+        NoteController noteController = new NoteController();
+        Note note1 = noteController.createNote("","");
+        Note note2 = noteController.createNote("","");
 
-        mock.perform(post(url)).andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(param));
+        assertThat(note1.getId()).isNotEqualTo(note2.getId());
     }
 
     @Test
-    void returnsCorrectDescription() throws Exception {
-        final String param = "abcdefg";
-        final String url = "/create?description=" + param;
+    void createsNoteWithProvidedTitle() {
+        final String title = "Example title";
 
-        mock.perform(post(url)).andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.description").value(param));
+        NoteController noteController = new NoteController();
+        Note note = noteController.createNote(title, "");
+
+        assertThat(note.getTitle()).isEqualTo(title);
     }
 
     @Test
-    void returnsDefault() throws Exception {
-        mock.perform(post("/create")).andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Add title here"))
-                .andExpect(jsonPath("$.description").value(""));
+    void createsNoteWithProvidedDescription() {
+        final String description = "Example description that provides context.";
+
+        NoteController noteController = new NoteController();
+        Note note = noteController.createNote("", description);
+
+        assertThat(note.getDescription()).isEqualTo(description);
+    }
+
+    @Test
+    void createsNoteWithProvidedTitleAndDescription() {
+        final String title = "Example title", description = "Example description";
+
+        NoteController noteController = new NoteController();
+        Note note = noteController.createNote(title, description);
+
+        assertThat(note.getTitle()).isEqualTo(title);
+        assertThat(note.getDescription()).isEqualTo(description);
     }
 }

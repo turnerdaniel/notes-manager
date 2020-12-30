@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.danielturner.notesmanager.models.Note;
 
 @RestController
-public class NotesController {
+public class NoteController {
   private final AtomicLong uniqueId = new AtomicLong();
 
-  @PostMapping("/create")
-  public Note createNote(@RequestParam(value = "title", defaultValue = "Add title here") String title,
-                         @RequestParam(value = "description", defaultValue = "") String description) {
+  @PostMapping("/notes")
+  public Note createNote(@RequestParam(defaultValue = "Add title here") String title,
+                         @RequestParam(defaultValue = "") String description) {
 
     final long id = uniqueId.incrementAndGet();
     return new Note(id, title, description);
