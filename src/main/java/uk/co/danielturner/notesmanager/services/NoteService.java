@@ -22,13 +22,23 @@ public class NoteService {
   }
 
   public Note getById(Long id) {
+    return noteRepository.findById(id).orElseThrow(() -> new NoteNotFoundException(id));
+  }
+
+  public Note updateById(Long id, Note newNote) {
     return noteRepository.findById(id)
-        .orElseThrow(
-            () -> new NoteNotFoundException("Note not found with ID :: " + id.toString())
-        );
+        .map(note -> {
+          note.setTitle(newNote.getTitle());
+          note.setDescription(newNote.getDescription());
+          return noteRepository.save(note);
+        }).orElseThrow(() -> new NoteNotFoundException(id));
   }
 
   public void deleteById(Long id) {
-    noteRepository.deleteById(id);
+    if (noteRepository.existsById(id)) {
+      noteRepository.deleteById(id);
+    } else {
+      throw new NoteNotFoundException(id);
+    }
   }
 }

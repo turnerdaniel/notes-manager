@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NoteNotFoundException extends RuntimeException {
 
   // https://stackoverflow.com/questions/62044747/message-field-is-empty-in-error-response-spring-boot
-  public NoteNotFoundException(String message) {
-    super(message);
+  public NoteNotFoundException(Long id) {
+    super("Could not find note with id of " + id.toString());
   }
 }
