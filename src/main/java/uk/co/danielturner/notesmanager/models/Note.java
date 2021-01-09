@@ -38,9 +38,8 @@ public class Note {
 
   }
 
-  public Note(long id, String title, String description) {
+  public Note(String title, String description) {
     Date now = new Date();
-    this.id = id;
     this.title = title;
     this.description = description;
     this.createdAt = now;
