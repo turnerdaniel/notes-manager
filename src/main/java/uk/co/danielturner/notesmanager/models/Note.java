@@ -55,7 +55,7 @@ public class Note {
   }
 
   public void setTitle(String title) {
-    this.title = title;
+    this.title = (title == null) ? "" : title;
   }
 
   public String getDescription() {
@@ -63,7 +63,7 @@ public class Note {
   }
 
   public void setDescription(String description) {
-    this.description = description;
+    this.description = (description == null) ? "" : description;
   }
 
   public Date getCreatedAt() {
