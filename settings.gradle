@@ -1,1 +1,3 @@
 rootProject.name = 'notes-manager'
+
+include 'notes-manager-web', 'notes-manager-acceptance-tests'
