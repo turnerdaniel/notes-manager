@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test;
 
 class NoteTest {
   @Test
-  void createsNoteObjectWithNullFieldsUsingDefaultConstructor() {
+  void createsNoteObjectWithEmptyFieldsUsingDefaultConstructor() {
     Note note = new Note();
 
-    assertThat(note).hasAllNullFieldsOrPropertiesExcept("id");
+    assertThat(note.getTitle()).isEqualTo("");
+    assertThat(note.getDescription()).isEqualTo("");
   }
 
   @Test

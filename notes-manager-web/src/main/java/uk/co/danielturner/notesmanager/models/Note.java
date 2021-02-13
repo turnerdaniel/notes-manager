@@ -1,5 +1,9 @@
 package uk.co.danielturner.notesmanager.models;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,23 +39,24 @@ public class Note {
   private Date updatedAt;
 
   public Note() {
-
+    this.title = "";
+    this.description = "";
   }
 
   public Note(String title, String description) {
     Date now = new Date();
-    this.title = title;
-    this.description = description;
+    setTitle(title);
+    setDescription(description);
     this.createdAt = now;
     this.updatedAt = now;
   }
 
   public long getId() {
-    return id;
+    return this.id;
   }
 
   public String getTitle() {
-    return title;
+    return this.title;
   }
 
   public void setTitle(String title) {
@@ -59,7 +64,7 @@ public class Note {
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public void setDescription(String description) {
@@ -67,10 +72,10 @@ public class Note {
   }
 
   public Date getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public Date getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 }
