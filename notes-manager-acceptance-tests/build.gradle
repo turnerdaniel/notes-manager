@@ -6,8 +6,25 @@ bootRun {
     enabled = false
 }
 
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
 dependencies {
-    implementation (project(':notes-manager-web'))
-    testImplementation 'io.cucumber:cucumber-java:6.8.1'
-    testImplementation 'io.cucumber:cucumber-junit:6.8.1'
+    implementation(project(':notes-manager-web'))
+    testImplementation('io.cucumber:cucumber-java:6.10.0')
+    testImplementation('io.cucumber:cucumber-junit-platform-engine:6.10.0')
+    testImplementation('io.cucumber:cucumber-spring:6.10.0')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework:spring-web') {
+        because("Needed to use MediaType")
+    }
+    testImplementation('org.apache.tomcat.embed:tomcat-embed-core') {
+        because("Needed to use HttpServletResponse")
+    }
+    testImplementation('com.fasterxml.jackson.core:jackson-databind') {
+        because("Needed to marshal JSON between strings and objects")
+    }
 }
