@@ -41,10 +41,4 @@ subprojects {
 			xml.destination file("${buildDir}/reports/jacoco/coverage.xml")
 		}
 	}
-
-	task version {
-		doLast {
-			println project.version
-		}
-	}
 }
