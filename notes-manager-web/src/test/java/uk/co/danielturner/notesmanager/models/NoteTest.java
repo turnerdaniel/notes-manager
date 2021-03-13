@@ -2,14 +2,16 @@ package uk.co.danielturner.notesmanager.models;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 
 class NoteTest {
   @Test
-  void createsNoteObjectWithNullFieldsUsingDefaultConstructor() {
+  void createsNoteObjectWithEmptyFieldsUsingDefaultConstructor() {
     Note note = new Note();
 
-    assertThat(note).hasAllNullFieldsOrPropertiesExcept("id");
+    assertThat(note.getTitle()).isEqualTo("");
+    assertThat(note.getDescription()).isEqualTo("");
   }
 
   @Test
@@ -53,5 +55,21 @@ class NoteTest {
     note.setDescription(null);
 
     assertThat(note.getDescription()).isNotNull();
+  }
+
+  @Test
+  void setsCreatedAtToCurrentTime() {
+    final Date now = new Date();
+    Note note = new Note("", "");
+
+    assertThat(note.getCreatedAt()).isCloseTo(now, 5000);
+  }
+
+  @Test
+  void setsUpdatedAtToCurrentTime() {
+    final Date now = new Date();
+    Note note = new Note("", "");
+
+    assertThat(note.getUpdatedAt()).isCloseTo(now, 5000);
   }
 }
