@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version: ${{ steps.set-version.outputs.project-version }}
+      version: ${{ steps.set-version.outputs.VERSION }}
 
     steps:
       - name: Checkout project
@@ -91,14 +91,12 @@ jobs:
         run: ./gradlew bootJar
       - name: Set project version as job output
         id: set-version
-        run: |
-          VER=`./gradlew -q version`
-          echo "::set-output name=project-version::$VER"
+        run: echo "::set-output name=VERSION::`./gradlew -q version`"
       - name: Upload artefact
         uses: actions/upload-artifact@v2
         with:
           name: notes-manager
-          path: notes-manager-web/build/libs/notes-manager-$VER.jar
+          path: notes-manager-web/build/libs/notes-manager-${{ steps.set-version.outputs.VERSION }}.jar
           if-no-files-found: error
 
   deploy:
