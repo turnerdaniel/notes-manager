@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports: [ "8080:8080" ]
+    restart: unless-stopped
+    depends_on: [ db ]
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      NOTES_DATABASE_HOST: db:3306
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+  db:
+    image: mysql:8.0.23
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: notes
