@@ -1,5 +1,8 @@
 version: "3.9"
 
+volumes:
+  mysql:
+
 services:
   api:
     build: .
@@ -17,3 +20,5 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: notes
+    volumes:
+      - mysql:/var/lib/mysql
