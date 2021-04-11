@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-04-11
+
 ### Added
 
 - New Dockerfile to enable docker support
@@ -39,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CodeQL code security scanning
 - CodeCov and JaCoCo to provide test coverage metrics
 
-[unreleased]: https://github.com/turnerdaniel/notes-manager/compare/1.0.1...HEAD
+[unreleased]: https://github.com/turnerdaniel/notes-manager/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/turnerdaniel/notes-manager/compare/1.0.1...1.1.0
 [1.0.1]: https://github.com/turnerdaniel/notes-manager/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/turnerdaniel/notes-manager/releases/tag/1.0.0
