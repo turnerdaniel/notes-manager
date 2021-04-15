@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added 
+
+- Release docker image to GitHub Container Registry (GHCR)
+
+### Changed
+
+- Updated formatting and name of GitHub Actions workflows to better reflect their purpose.
+
 ## [1.1.0] - 2021-04-11
 
 ### Added
