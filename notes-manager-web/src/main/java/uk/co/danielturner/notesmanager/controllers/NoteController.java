@@ -1,8 +1,7 @@
 package uk.co.danielturner.notesmanager.controllers;
 
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
-
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,41 +18,40 @@ import uk.co.danielturner.notesmanager.models.Note;
 import uk.co.danielturner.notesmanager.services.NoteService;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v2")
 public class NoteController {
 
   @Autowired
   private NoteService noteService;
 
   @PostMapping("/notes")
-  public ResponseEntity<Note> createNote(@RequestBody Note note) {
-    final Note createdNote = noteService.create(note);
+  public ResponseEntity<Note> createNote(@RequestBody Note note, Principal principal) {
+    final Note createdNote = noteService.create(note, principal);
     final URI uri = MvcUriComponentsBuilder
-        .fromMethodCall(on(NoteController.class).createNote(note))
-        .pathSegment("{id}")
-        .buildAndExpand(createdNote.getId())
-        .toUri();
+        .fromController(NoteController.class)
+        .pathSegment("notes", "{id}")
+        .build(createdNote.getId());
     return ResponseEntity.created(uri).body(createdNote);
   }
 
   @GetMapping("/notes")
-  public ResponseEntity<List<Note>> getAllNotes() {
-    return ResponseEntity.ok(noteService.getAll());
+  public ResponseEntity<List<Note>> getAllNotes(Principal principal) {
+    return ResponseEntity.ok(noteService.getAll(principal));
   }
 
   @GetMapping("/notes/{id}")
-  public ResponseEntity<Note> getNoteById(@PathVariable Long id) {
-    return ResponseEntity.ok(noteService.getById(id));
+  public ResponseEntity<Note> getNoteById(@PathVariable Long id, Principal principal) {
+    return ResponseEntity.ok(noteService.getById(id, principal));
   }
 
   @PutMapping("/notes/{id}")
-  public ResponseEntity<Note> updateNoteById(@PathVariable Long id, @RequestBody Note note) {
-    return ResponseEntity.ok(noteService.updateById(id, note));
+  public ResponseEntity<Note> updateNoteById(@PathVariable Long id, @RequestBody Note note, Principal principal) {
+    return ResponseEntity.ok(noteService.updateById(id, note, principal));
   }
 
   @DeleteMapping("/notes/{id}")
-  public ResponseEntity<Note> deleteNoteById(@PathVariable Long id) {
-    noteService.deleteById(id);
+  public ResponseEntity<Note> deleteNoteById(@PathVariable Long id, Principal principal) {
+    noteService.deleteById(id, principal);
     return ResponseEntity.noContent().build();
   }
 }

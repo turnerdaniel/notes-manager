@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.security.Principal;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -24,17 +26,16 @@ import uk.co.danielturner.notesmanager.services.NoteService;
 @ExtendWith(MockitoExtension.class)
 class NoteControllerTest {
 
-  @Mock
-  NoteService noteService;
+  @Mock private NoteService noteService;
+  @Mock private Principal principal;
 
-  @InjectMocks
-  NoteController noteController;
+  @InjectMocks private NoteController noteController;
 
   @Nested
-  class createNoteTests {
+  class NoteCreation {
     @BeforeEach
     void setup() {
-      when(noteService.create(any(Note.class))).thenReturn(new Note());
+      when(noteService.create(any(Note.class), any(Principal.class))).thenReturn(new Note());
 
       MockHttpServletRequest request = new MockHttpServletRequest();
       RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
@@ -49,102 +50,102 @@ class NoteControllerTest {
     void callsCreateFromService() {
       final Note note = new Note();
 
-      noteController.createNote(note);
+      noteController.createNote(note, principal);
 
-      verify(noteService).create(note);
+      verify(noteService).create(note, principal);
     }
 
     @Test
     void returnsCreatedResponseOnSuccess() {
-      ResponseEntity response = noteController.createNote(new Note());
+      ResponseEntity<Note> response = noteController.createNote(new Note(), principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
     void returnsLocationHeaderOnSuccess() {
-      ResponseEntity response = noteController.createNote(new Note());
+      ResponseEntity<Note> response = noteController.createNote(new Note(), principal);
 
       assertThat(response.getHeaders().getLocation()).isNotNull();
     }
   }
 
   @Nested
-  class getAllNotesTests {
+  class RetrieveAllNotes {
     @Test
     void callsGetAllFromService() {
-      noteController.getAllNotes();
+      noteController.getAllNotes(principal);
 
-      verify(noteService).getAll();
+      verify(noteService).getAll(principal);
     }
 
     @Test
     void returnsOkResponseOnSuccess() {
-      ResponseEntity response = noteController.getAllNotes();
+      ResponseEntity<List<Note>> response = noteController.getAllNotes(principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
   }
 
   @Nested
-  class getNoteByIdTests {
+  class RetrieveASingleNote {
     @Test
     void callsGetNotesByIdFromService() {
       final long id = 1;
 
-      noteController.getNoteById(id);
+      noteController.getNoteById(id, principal);
 
-      verify(noteService).getById(id);
+      verify(noteService).getById(id, principal);
     }
 
     @Test
     void returnsOkResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity response = noteController.getNoteById(id);
+      ResponseEntity<Note> response = noteController.getNoteById(id, principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
   }
 
   @Nested
-  class updateNoteByIdTests {
+  class UpdateASingleNote {
     @Test
     void callsUpdateNoteByIdFromService() {
       final long id = 1;
       final Note note = new Note();
 
-      noteController.updateNoteById(id, note);
+      noteController.updateNoteById(id, note, principal);
 
-      verify(noteService).updateById(id, note);
+      verify(noteService).updateById(id, note, principal);
     }
 
     @Test
     void returnsOkResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity response = noteController.updateNoteById(id, new Note());
+      ResponseEntity<Note> response = noteController.updateNoteById(id, new Note(), principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
   }
 
   @Nested
-  class deleteNoteByIdTests {
+  class DeleteASingleNote {
     @Test
     void callsDeleteNoteByIdFromService() {
       final long id = 1;
 
-      noteController.deleteNoteById(id);
+      noteController.deleteNoteById(id, principal);
 
-      verify(noteService).deleteById(id);
+      verify(noteService).deleteById(id, principal);
     }
 
     @Test
     void returnsNoContentResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity response = noteController.deleteNoteById(id);
+      ResponseEntity<Note> response = noteController.deleteNoteById(id, principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
