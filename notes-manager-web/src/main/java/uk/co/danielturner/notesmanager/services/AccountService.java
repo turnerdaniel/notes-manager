@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
 import uk.co.danielturner.notesmanager.models.Token;
 import uk.co.danielturner.notesmanager.models.Account;
 import uk.co.danielturner.notesmanager.repositories.AccountRepository;
@@ -50,7 +52,11 @@ public class AccountService implements UserDetailsService {
 
   public Account create(Account account) {
     account.setPassword(passwordEncoder.encode(account.getPassword()));
-    return accountRepository.save(account);
+    try {
+      return accountRepository.save(account);
+    } catch (DataIntegrityViolationException e) {
+      throw new UsernameAlreadyExistsException(e);
+    }
   }
 
   public Token authenticate(Account account) {
