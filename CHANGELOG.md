@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking
+
+- All requests now need to be authenticated using a bearer token
+- All endpoints have been updated to v2 to emphasise this breaking this change
+
+### Added
+
+- User profiles - You must now register and authenticate before using the Notes Manager API
+- Individual notes per account for added privacy
+
 ## [1.2.0] - 2021-05-02
 
 ### Added
