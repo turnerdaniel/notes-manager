@@ -9,13 +9,13 @@ info:
   license:
     name: MIT
     url: 'https://raw.githubusercontent.com/turnerdaniel/notes-manager/main/LICENSE.md'
-  version: 1.2.0
+  version: 2.0.0
 
 #servers:
 #  - url: 'http://localhost:8080/v1'
 
 paths:
-  '/v1/notes/{id}':
+  '/v2/notes/{id}':
     parameters:
       - name: id
         in: path
@@ -26,8 +26,10 @@ paths:
           format: int64
     get:
       tags:
-        - Note Controller
+        - Notes
       operationId: getNoteById
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Note has been found.
@@ -43,12 +45,16 @@ paths:
                 updatedAt: '2021-04-10T12:30:47.583Z'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
       tags:
-        - Note Controller
+        - Notes
       operationId: updateNoteById
+      security:
+        - bearerAuth: []
       requestBody:
         $ref: '#/components/requestBodies/Note'
       responses:
@@ -66,25 +72,33 @@ paths:
                 updatedAt: '2021-04-11T14:45:12.856Z'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
       tags:
-        - Note Controller
+        - Notes
       operationId: deleteNoteById
+      security:
+        - bearerAuth: []
       responses:
         '204':
           description: Note has been deleted.
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/notes:
+  '/v2/notes':
     get:
       tags:
-        - Note Controller
+        - Notes
       operationId: getAllNotes
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Notes have been found.
@@ -105,11 +119,15 @@ paths:
                     description: Clean up room.
                     createdAt: '2021-04-11T10:00:32.342Z'
                     updatedAt: '2021-04-11T10:00:32.342Z'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
     post:
       tags:
-        - Note Controller
+        - Notes
       operationId: createNote
+      security:
+        - bearerAuth: []
       requestBody:
         $ref: '#/components/requestBodies/Note'
       responses:
@@ -130,7 +148,65 @@ paths:
                 description: Visit the hospital for doctors appointment.
                 createdAt: '2021-04-10T12:30:47.583Z'
                 updatedAt: '2021-04-10T12:30:47.583Z'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
+  '/v2/register':
+    post:
+      tags:
+        - Users
+      operationId: register
+      requestBody:
+        $ref: '#/components/requestBodies/Account'
+      responses:
+        '200':
+          description: User has successfully registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              example:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                username: email@provider.com
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  '/v2/authenticate':
+    post:
+      tags:
+        - Users
+      operationId: login
+      requestBody:
+        $ref: '#/components/requestBodies/Account'
+      responses:
+        '200':
+          description: User has successfully authenticated and can use the provided `token` for subsequent requests.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJOb3RlcyBNYW5hZ2VyIn0.xVwLT6-NRZwpqwOaGynqu0MZvmUq1nUSHOc2WjT28IE
+
+  '/v2/account':
+    get:
+      tags:
+        - Users
+      operationId: details
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Account details have been found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              example:
+                id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                username: email@provider.com
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
 components:
   requestBodies:
@@ -143,6 +219,15 @@ components:
           example:
             title: Reminder
             description: Visit the hospital for doctors appointment.
+    Account:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Account'
+          example:
+            username: email@provider.com
+            password: a3BNs3*m3n_
 
   responses:
     BadRequest:
@@ -156,7 +241,19 @@ components:
             status: 400
             error: Bad Request
             message: ''
-            path: /v1/notes/abcd
+            path: /v2/notes/abcd
+    Forbidden:
+      description: Authentication not valid or has not be provided.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            timestamp: '2021-04-10T12:30:47.583Z'
+            status: 403
+            error: Forbidden
+            message: ''
+            path: /v2/notes/1
     NotFound:
       description: Note with specified `id` not found.
       content:
@@ -168,7 +265,19 @@ components:
             status: 404
             error: Not Found
             message: ''
-            path: /v1/notes/201
+            path: /v2/notes/201
+    Conflict:
+      description: User already exists.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            timestamp: '2021-04-10T12:30:47.583Z'
+            status: 409
+            error: Conflict
+            message: ''
+            path: /v2/register
 
   schemas:
     Note:
@@ -195,6 +304,27 @@ components:
           format: date-time
           readOnly: true
           description: The time the note was last updated in ISO-8601 format
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique value used to identify each account
+        username:
+          type: string
+          description: Email address for the account
+        password:
+          type: string
+          writeOnly: true
+          description: Password used to login to the account
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          description: A JSON Web Token (JWT) representing account information
     Error:
       type: object
       properties:
@@ -214,3 +344,9 @@ components:
         path:
           type: string
           description: The URI where the error occured
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
