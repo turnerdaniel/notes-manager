@@ -4,10 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import uk.co.danielturner.notesmanager.models.Account;
 
 @Service
 public class JwtHelper {
@@ -18,8 +17,8 @@ public class JwtHelper {
     return JWT.decode(token).getSubject();
   }
 
-  public String generateToken(UserDetails userDetails) {
-    return createJwt(userDetails.getUsername());
+  public String generateToken(Account account) {
+    return createJwt(account.getUsername());
   }
 
   public Boolean verifyToken(String token) {

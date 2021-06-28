@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import uk.co.danielturner.notesmanager.models.Account;
 import uk.co.danielturner.notesmanager.services.AccountService;
 import uk.co.danielturner.notesmanager.utils.JwtHelper;
 
@@ -34,10 +34,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       String jwt = authorisationHeader.split(" ")[1];
       if (jwtHelper.verifyToken(jwt)) {
         String username = jwtHelper.getSubject(jwt);
-        UserDetails userDetails = accountService.loadUserByUsername(username);
+        Account account = accountService.loadUserByUsername(username);
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities()));
+            account, null, account.getAuthorities()));
       }
     }
 
