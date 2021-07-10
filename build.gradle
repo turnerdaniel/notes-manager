@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.5.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.sonarqube' version '3.3'
 }
 
 allprojects {
@@ -9,6 +10,15 @@ allprojects {
 
 	repositories {
 		mavenCentral()
+	}
+}
+
+sonarqube {
+	properties {
+		property 'sonar.projectName', 'Notes Manager'
+		property 'sonar.projectKey', 'notes-manager'
+		property 'sonar.organization', 'turnerdaniel'
+		property 'sonar.host.url', 'https://sonarcloud.io'
 	}
 }
 
