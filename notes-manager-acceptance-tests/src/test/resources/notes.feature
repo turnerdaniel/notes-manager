@@ -1,43 +1,37 @@
-Feature: Validate API can respond to successful requests
+Feature: The API can manage notes for authenticated users
+
+  Background:
+    Given an existing user account
+    And the client has authenticated
 
   Scenario: Add a new note
-    When The client sends a POST request to /v1/notes with the body:
-      """
-      {"title": "Title", "description": "Description"}
-      """
+    When the client sends an authenticated request to create a new note
     Then The client should get a 201 response
-    And The response should contain a location header ending with /v1/notes/1
-    And The response should contain a note with the title of "Title"
-    And The response should contain a note with the description of "Description"
+    And the response should contain a location header ending with /notes/1
+    And the response should contain a note with a matching title
+    And the response should contain a note with a matching description
 
   Scenario: Retrieve all previously created notes
-    Given The client has successfully created 2 notes
-    When The client sends a GET request to /v1/notes
+    Given the client has successfully created 3 notes
+    When the client sends an authenticated request to retrieve all notes
     Then The client should get a 200 response
-    And The response should contain 2 notes
+    And the response should contain 3 notes
 
   Scenario: Retrieve a previously created note
-    Given The client sends a POST request to /v1/notes with the body:
-      """
-      {"title": "Title", "description": "Description"}
-      """
-    When The client sends a GET request to /v1/notes/1
+    Given the client has successfully created 1 note
+    When the client sends an authenticated request to retrieve the 1st note
     Then The client should get a 200 response
-    And The response should contain a note with the title of "Title"
-    And The response should contain a note with the description of "Description"
+    And the response should contain a note with a matching title
+    And the response should contain a note with a matching description
 
   Scenario: Overwrite a previously created note
-    Given The client has successfully created 3 notes
-    When The client sends a PUT request to /v1/notes/2 with the body:
-    """
-    {"description": "New Description"}
-    """
+    Given the client has successfully created 1 note
+    When the client sends an authenticated request to update the 1st note
     Then The client should get a 200 response
-    And The response should contain a note with the title of ""
-    And The response should contain a note with the description of "New Description"
-    And The response should contain a note with an ID of 2
+    And the response should contain a note with a matching title
+    And the response should contain a note with a matching description
 
   Scenario: Delete a previously created note
-    Given The client has successfully created 3 notes
-    When The client sends a DELETE request to /v1/notes/3
+    Given the client has successfully created 1 note
+    When the client sends an authenticated request to delete the 1st note
     Then The client should get a 204 response
