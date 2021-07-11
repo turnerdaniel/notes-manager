@@ -1,3 +1,5 @@
+package uk.co.danieltuner.notesmanager;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.co.danielturner.notesmanager.models.Note;
+
 
 public abstract class Steps {
 
