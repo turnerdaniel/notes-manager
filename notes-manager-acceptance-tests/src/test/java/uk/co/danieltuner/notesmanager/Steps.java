@@ -1,7 +1,5 @@
 package uk.co.danieltuner.notesmanager;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.co.danielturner.notesmanager.models.Note;
-
 
 public abstract class Steps {
 
@@ -105,6 +102,6 @@ public abstract class Steps {
   }
 
   private MockHttpServletResponse sendRequest(RequestBuilder requestBuilder) throws Exception {
-    return mockMvc.perform(requestBuilder).andDo(print()).andReturn().getResponse();
+    return mockMvc.perform(requestBuilder).andReturn().getResponse();
   }
 }
