@@ -88,24 +88,6 @@ public class NoteSteps extends Steps {
     assertThat(responseNote.get("description").asText()).isEqualTo(description);
   }
 
-  @Then("^The response should contain a note with the title of \"(.*)\"$")
-  public void receiveResponseBodyWithTitle(String title) throws UnsupportedEncodingException, JsonProcessingException {
-    JsonNode responseNote = createObject(world.response.getContentAsString());
-    assertThat(responseNote.get("title").asText()).isEqualTo(title);
-  }
-
-  @Then("^The response should contain a note with the description of \"(.*)\"$")
-  public void receiveResponseBodyWithDescription(String description) throws UnsupportedEncodingException, JsonProcessingException {
-    JsonNode responseNote = createObject(world.response.getContentAsString());
-    assertThat(responseNote.get("description").asText()).isEqualTo(description);
-  }
-
-  @Then("^The response should contain a note with an ID of (\\d*)$")
-  public void receiveResponseBodyWithId(int id) throws UnsupportedEncodingException, JsonProcessingException {
-    JsonNode responseNote = createObject(world.response.getContentAsString());
-    assertThat(responseNote.get("id").asInt()).isEqualTo(id);
-  }
-
   @Then("^the response should contain (\\d*) notes$")
   public void receiveResponseBodyWithQuantity(int quantity)
       throws UnsupportedEncodingException, JsonProcessingException {
