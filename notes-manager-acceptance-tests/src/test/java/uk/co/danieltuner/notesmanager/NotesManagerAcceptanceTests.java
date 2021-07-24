@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.co.danielturner.notesmanager.NotesManagerApplication;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources")
+@CucumberOptions(features = "src/test/resources", tags = "not @bug")
 @CucumberContextConfiguration
 @ContextConfiguration(classes = NotesManagerApplication.class)
 @ComponentScan

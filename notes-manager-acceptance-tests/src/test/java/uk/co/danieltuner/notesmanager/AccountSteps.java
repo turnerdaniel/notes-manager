@@ -2,6 +2,7 @@ package uk.co.danieltuner.notesmanager;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
+import java.io.IOException;
 
 public class AccountSteps extends Steps {
 
@@ -34,16 +35,13 @@ public class AccountSteps extends Steps {
   }
 
   @When("^the client sends an (unauthenticated|authenticated) request for account details$")
-  public void sendAccountDetailsRequest(String authType) throws Exception {
+  public void sendAccountDetailsRequest(String auth) throws Exception {
     final String url = "/v2/account";
-    switch (authType) {
-      case "authenticated":
-        world.response = get(url, world.authToken);
-        break;
-      case "unauthenticated":
-      default:
-        world.response = get(url);
-        break;
-    }
+    world.response = auth.equals("authenticated") ? get(url, world.authToken) : get(url);
+  }
+
+  @When("^the subject within the authentication token is altered$")
+  public void changeAuthTokenClaim() throws IOException {
+    world.authToken = changeTokenSubject(world.authToken);
   }
 }

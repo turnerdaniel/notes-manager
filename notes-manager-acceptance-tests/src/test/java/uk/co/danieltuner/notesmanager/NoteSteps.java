@@ -29,41 +29,42 @@ public class NoteSteps extends Steps {
   @Given("^the client has successfully created (\\d*) note(?:s?)$")
   public void setUpNotes(int quantity) throws Exception {
     if (quantity == 1) {
-      sendCreateNoteRequest();
+      sendCreateNoteRequest("authenticated");
     } else {
       setUpMultipleNotes(world.authToken, quantity);
     }
   }
 
-  @When("^the client sends an authenticated request to create a new note$")
-  public void sendCreateNoteRequest() throws Exception {
+  @When("^the client sends an (unauthenticated|authenticated) request to create a new note$")
+  public void sendCreateNoteRequest(String auth) throws Exception {
     final String url = "/v2/notes";
-    world.response = post(url, createNoteAsJson(this.title, this.description), world.authToken);
+    final String note = createNoteAsJson(this.title, this.description);
+    world.response = auth.equals("authenticated") ? post(url, note, world.authToken) : post(url, note);
   }
 
-  @When("^the client sends an authenticated request to retrieve all notes$")
-  public void sendGetAllNoteRequest() throws Exception {
+  @When("^the client sends an (unauthenticated|authenticated) request to retrieve all notes$")
+  public void sendGetAllNoteRequest(String auth) throws Exception {
     final String url = "/v2/notes";
-    world.response = get(url, world.authToken);
+    world.response = auth.equals("authenticated") ? get(url, world.authToken) : get(url);
   }
 
-  @When("^the client sends an authenticated request to retrieve the (\\d*)(?:st|nd|rd|th) note$")
-  public void sendGetSingleNoteRequest(int id) throws Exception {
+  @When("^the client sends an (unauthenticated|authenticated) request to retrieve the (\\d*)(?:st|nd|rd|th) note$")
+  public void sendGetSingleNoteRequest(String auth, int id) throws Exception {
     final String url = String.format("/v2/notes/%d", id);
-    world.response = get(url, world.authToken);
+    world.response = auth.equals("authenticated") ? get(url, world.authToken) : get(url);
   }
 
-  @When("^the client sends an authenticated request to update the (\\d*)(?:st|nd|rd|th) note$")
-  public void sendUpdateNoteRequest(int id) throws Exception {
+  @When("^the client sends an (unauthenticated|authenticated) request to update the (\\d*)(?:st|nd|rd|th) note$")
+  public void sendUpdateNoteRequest(String auth, int id) throws Exception {
     final String url = String.format("/v2/notes/%d", id);
     final String body = createNoteAsJson(this.title, this.description);
-    world.response = put(url, body, world.authToken);
+    world.response = auth.equals("authenticated") ? put(url, body, world.authToken) : put(url, body);
   }
 
-  @When("^the client sends an authenticated request to delete the (\\d*)(?:st|nd|rd|th) note$")
-  public void sendDeleteNoteRequest(int id) throws Exception {
+  @When("^the client sends an (unauthenticated|authenticated) request to delete the (\\d*)(?:st|nd|rd|th) note$")
+  public void sendDeleteNoteRequest(String auth, int id) throws Exception {
     final String url = String.format("/v2/notes/%d", id);
-    world.response = delete(url, world.authToken);
+    world.response = auth.equals("authenticated") ? delete(url, world.authToken) : delete(url);
   }
 
   @Then("^The client should get a (\\d*) response$")
