@@ -19,18 +19,23 @@ public class AccountSteps extends Steps {
   public void createUserAccount() throws Exception {
     this.username = "test.user@example.com";
     this.password = "PaSsWoRd";
-    final String body = String
-        .format("{\"username\": \"%s\", \"password\": \"%s\"}", this.username, this.password);
 
-    world.response = post("/v2/register", body);
+    world.response = post("/v2/register", createAccountRequest(this.username, this.password));
+  }
+
+  @Given("^the client has authenticated with a different user account$")
+  public void authenticateWithDifferentUserAccount() throws Exception {
+    this.username = "real.user@domain.com";
+    this.password = "$tr0nGP455W0Rd";
+
+    post("/v2/register", createAccountRequest(this.username, this.password));
+    world.response = post("/v2/authenticate", createAccountRequest(this.username, this.password));
+    world.authToken = createObject(world.response.getContentAsString()).get("token").asText();
   }
 
   @When("^the client has authenticated$")
   public void attemptLogin() throws Exception {
-    final String body = String
-        .format("{\"username\": \"%s\", \"password\": \"%s\"}", this.username, this.password);
-
-    world.response = post("/v2/authenticate", body);
+    world.response = post("/v2/authenticate", createAccountRequest(this.username, this.password));
     world.authToken = createObject(world.response.getContentAsString()).get("token").asText();
   }
 

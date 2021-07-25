@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.StringJoiner;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,15 @@ public abstract class Steps {
   protected String createNoteAsJson(String title, String description)
       throws JsonProcessingException {
     return objectMapper.writeValueAsString(new Note(title, description));
+  }
+
+  protected String createAccountRequest(String username, String password)
+      throws JsonProcessingException {
+    Map<String, String> request = Map.of(
+        "username", username,
+        "password", password
+    );
+    return objectMapper.writeValueAsString(request);
   }
 
   protected void setUpMultipleNotes(String token, int quantity) throws Exception {
