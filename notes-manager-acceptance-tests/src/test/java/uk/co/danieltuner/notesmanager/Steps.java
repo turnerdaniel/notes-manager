@@ -19,7 +19,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.co.danielturner.notesmanager.models.Note;
 
 public abstract class Steps {
 
@@ -86,9 +85,13 @@ public abstract class Steps {
     return objectMapper.readTree(json);
   }
 
-  protected String createNoteAsJson(String title, String description)
+  protected String createNoteRequest(String title, String description)
       throws JsonProcessingException {
-    return objectMapper.writeValueAsString(new Note(title, description));
+    Map<String, String> request = Map.of(
+        "title", title,
+        "description", description
+    );
+    return objectMapper.writeValueAsString(request);
   }
 
   protected String createAccountRequest(String username, String password)
@@ -103,7 +106,7 @@ public abstract class Steps {
   protected void setUpMultipleNotes(String token, int quantity) throws Exception {
     final String url = "/v2/notes";
     for (int i = 1; i < quantity + 1; i++) {
-      String note = createNoteAsJson("Bulk Title" + i, "Bulk Description" + i);
+      String note = createNoteRequest("Bulk Title" + i, "Bulk Description" + i);
       post(url, note, token);
     }
   }

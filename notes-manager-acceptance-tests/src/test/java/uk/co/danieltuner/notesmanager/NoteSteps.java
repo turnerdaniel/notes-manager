@@ -38,7 +38,7 @@ public class NoteSteps extends Steps {
   @When("^the client sends an (unauthenticated|authenticated) request to create a new note$")
   public void sendCreateNoteRequest(String auth) throws Exception {
     final String url = "/v2/notes";
-    final String note = createNoteAsJson(this.title, this.description);
+    final String note = createNoteRequest(this.title, this.description);
     world.response = auth.equals("authenticated") ? post(url, note, world.authToken) : post(url, note);
   }
 
@@ -57,7 +57,7 @@ public class NoteSteps extends Steps {
   @When("^the client sends an (unauthenticated|authenticated) request to update the (\\d*)(?:st|nd|rd|th) note$")
   public void sendUpdateNoteRequest(String auth, int id) throws Exception {
     final String url = String.format("/v2/notes/%d", id);
-    final String body = createNoteAsJson(this.title, this.description);
+    final String body = createNoteRequest(this.title, this.description);
     world.response = auth.equals("authenticated") ? put(url, body, world.authToken) : put(url, body);
   }
 
