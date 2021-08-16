@@ -34,8 +34,6 @@ public class Account implements UserDetails {
   boolean accountNonLocked = true;
   boolean credentialsNonExpired = true;
 
-  public Account() {}
-
   public UUID getId() {
     return id;
   }
