@@ -2,7 +2,6 @@ package uk.co.danielturner.notesmanager.controllers;
 
 import java.net.URI;
 import java.security.Principal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +17,11 @@ import uk.co.danielturner.notesmanager.services.AccountService;
 @RequestMapping("/v2")
 public class AccountController {
 
-  @Autowired
-  AccountService accountService;
+  private final AccountService accountService;
+
+  public AccountController(AccountService accountService) {
+    this.accountService = accountService;
+  }
 
   @PostMapping("/register")
   public ResponseEntity<Account> register(@RequestBody Account account) {

@@ -1,8 +1,6 @@
 package uk.co.danielturner.notesmanager.services;
 
 import java.security.Principal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,19 +18,10 @@ import uk.co.danielturner.notesmanager.utils.JwtHelper;
 @Service
 public class AccountService implements UserDetailsService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
-
-  @Autowired
-  private AccountRepository accountRepository;
-
-  @Autowired
-  private AuthenticationManager authenticationManager;
-
-  @Autowired
-  private JwtHelper jwtHelper;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+  @Autowired private AccountRepository accountRepository;
+  @Autowired private AuthenticationManager authenticationManager;
+  @Autowired private JwtHelper jwtHelper;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   @Override
   public Account loadUserByUsername(String username) throws UsernameNotFoundException {
