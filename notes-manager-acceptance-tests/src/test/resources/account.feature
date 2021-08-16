@@ -19,7 +19,3 @@ Feature: The API can manage user accounts
     And the client has authenticated
     When the client sends an authenticated request for account details
     Then The client should get a 200 response
-
-  Scenario: Unauthenticated user cannot view account details
-    When the client sends an unauthenticated request for account details
-    Then The client should get a 403 response

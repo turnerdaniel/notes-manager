@@ -1,30 +1,25 @@
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+package uk.co.danieltuner.notesmanager.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cucumber.spring.CucumberContextConfiguration;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
+import java.util.Map;
+import java.util.StringJoiner;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.co.danielturner.notesmanager.NotesManagerApplication;
-import uk.co.danielturner.notesmanager.models.Note;
 
-@CucumberContextConfiguration
-@SpringBootTest
-@ContextConfiguration(classes = NotesManagerApplication.class)
-@AutoConfigureMockMvc
 public abstract class Steps {
 
   @Autowired
@@ -61,6 +56,13 @@ public abstract class Steps {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
   }
 
+  protected MockHttpServletResponse put(String url, String body) throws Exception {
+    return sendRequest(MockMvcRequestBuilders
+        .put(url)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(body));
+  }
+
   protected MockHttpServletResponse put(String url, String body, String jwt) throws Exception {
     return sendRequest(MockMvcRequestBuilders
         .put(url)
@@ -69,24 +71,42 @@ public abstract class Steps {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
   }
 
+  protected MockHttpServletResponse delete(String url) throws Exception {
+    return sendRequest(MockMvcRequestBuilders.delete(url));
+  }
+
   protected MockHttpServletResponse delete(String url, String jwt) throws Exception {
-    return sendRequest(
-        MockMvcRequestBuilders.delete(url).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
+    return sendRequest(MockMvcRequestBuilders
+        .delete(url)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
   }
 
   protected JsonNode createObject(String json) throws JsonProcessingException {
     return objectMapper.readTree(json);
   }
 
-  protected String createNoteAsJson(String title, String description)
+  protected String createNoteRequest(String title, String description)
       throws JsonProcessingException {
-    return objectMapper.writeValueAsString(new Note(title, description));
+    Map<String, String> request = Map.of(
+        "title", title,
+        "description", description
+    );
+    return objectMapper.writeValueAsString(request);
+  }
+
+  protected String createAccountRequest(String username, String password)
+      throws JsonProcessingException {
+    Map<String, String> request = Map.of(
+        "username", username,
+        "password", password
+    );
+    return objectMapper.writeValueAsString(request);
   }
 
   protected void setUpMultipleNotes(String token, int quantity) throws Exception {
     final String url = "/v2/notes";
     for (int i = 1; i < quantity + 1; i++) {
-      String note = createNoteAsJson("Bulk Title" + i, "Bulk Description" + i);
+      String note = createNoteRequest("Bulk Title" + i, "Bulk Description" + i);
       post(url, note, token);
     }
   }
@@ -110,7 +130,20 @@ public abstract class Steps {
     conn.close();
   }
 
+  protected String changeTokenSubject(String token) throws IOException {
+    String[] payload = token.split("\\.");
+
+    JsonNode claims = objectMapper.readTree(Base64.getDecoder().decode(payload[1]));
+    ((ObjectNode) claims).put("sub", "admin@example.com");
+
+    return new StringJoiner(".")
+        .add(payload[0])
+        .add(Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(claims)))
+        .add(payload[2])
+        .toString();
+  }
+
   private MockHttpServletResponse sendRequest(RequestBuilder requestBuilder) throws Exception {
-    return mockMvc.perform(requestBuilder).andDo(print()).andReturn().getResponse();
+    return mockMvc.perform(requestBuilder).andReturn().getResponse();
   }
 }
