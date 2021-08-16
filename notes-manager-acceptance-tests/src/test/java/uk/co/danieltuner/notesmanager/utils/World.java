@@ -1,4 +1,4 @@
-package uk.co.danieltuner.notesmanager;
+package uk.co.danieltuner.notesmanager.utils;
 
 import io.cucumber.spring.ScenarioScope;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @ScenarioScope
 public class World {
 
-  MockHttpServletResponse response;
-  String authToken;
+  public MockHttpServletResponse response;
+  public String authToken;
 }

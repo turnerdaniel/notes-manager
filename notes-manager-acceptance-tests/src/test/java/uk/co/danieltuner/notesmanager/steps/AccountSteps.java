@@ -1,8 +1,9 @@
-package uk.co.danieltuner.notesmanager;
+package uk.co.danieltuner.notesmanager.steps;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import java.io.IOException;
+import uk.co.danieltuner.notesmanager.utils.World;
 
 public class AccountSteps extends Steps {
 

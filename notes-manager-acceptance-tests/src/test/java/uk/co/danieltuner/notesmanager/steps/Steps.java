@@ -1,4 +1,4 @@
-package uk.co.danieltuner.notesmanager;
+package uk.co.danieltuner.notesmanager.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

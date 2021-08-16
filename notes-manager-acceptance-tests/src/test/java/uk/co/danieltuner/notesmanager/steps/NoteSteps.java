@@ -1,4 +1,4 @@
-package uk.co.danieltuner.notesmanager;
+package uk.co.danieltuner.notesmanager.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,6 +10,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import uk.co.danieltuner.notesmanager.utils.World;
 
 public class NoteSteps extends Steps {
 
