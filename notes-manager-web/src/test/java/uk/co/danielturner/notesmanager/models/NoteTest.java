@@ -10,8 +10,8 @@ class NoteTest {
   void createsNoteObjectWithEmptyFieldsUsingDefaultConstructor() {
     Note note = new Note();
 
-    assertThat(note.getTitle()).isEqualTo("");
-    assertThat(note.getDescription()).isEqualTo("");
+    assertThat(note.getTitle()).isEmpty();
+    assertThat(note.getDescription()).isEmpty();
   }
 
   @Test
