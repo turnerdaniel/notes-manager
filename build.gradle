@@ -16,23 +16,4 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
-	apply plugin: 'jacoco'
-
-	jar {
-		enabled = true
-	}
-
-	test {
-		useJUnitPlatform()
-		finalizedBy jacocoTestReport
-	}
-
-	jacocoTestReport {
-		dependsOn test
-		reports {
-			html.required = false
-			xml.required = true
-			xml.outputLocation = layout.buildDirectory.file("reports/jacoco/coverage.xml")
-		}
-	}
 }

@@ -6,18 +6,18 @@ bootRun {
     enabled = false
 }
 
-test {
-    testLogging {
-        showStandardStreams = true
-    }
-}
-
 configurations {
     testImplementation.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 }
 
 ext {
     cucumberVersion = '6.10.4'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
 }
 
 dependencies {
