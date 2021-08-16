@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class NotesLoggingFilter extends OncePerRequestFilter {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(NotesLoggingFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NotesLoggingFilter.class);
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
