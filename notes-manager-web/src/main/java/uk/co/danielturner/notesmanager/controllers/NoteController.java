@@ -3,7 +3,6 @@ package uk.co.danielturner.notesmanager.controllers;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +20,11 @@ import uk.co.danielturner.notesmanager.services.NoteService;
 @RequestMapping("/v2")
 public class NoteController {
 
-  @Autowired
-  private NoteService noteService;
+  private final NoteService noteService;
+
+  public NoteController(NoteService noteService) {
+    this.noteService = noteService;
+  }
 
   @PostMapping("/notes")
   public ResponseEntity<Note> createNote(@RequestBody Note note, Principal principal) {

@@ -18,11 +18,8 @@ import uk.co.danielturner.notesmanager.utils.JwtHelper;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-  @Autowired
-  JwtHelper jwtHelper;
-
-  @Autowired
-  AccountService accountService;
+  @Autowired private JwtHelper jwtHelper;
+  @Autowired private AccountService accountService;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

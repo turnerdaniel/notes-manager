@@ -17,11 +17,8 @@ import uk.co.danielturner.notesmanager.services.AccountService;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  AccountService accountService;
-
-  @Autowired
-  JwtRequestFilter jwtRequestFilter;
+  @Autowired private AccountService accountService;
+  @Autowired private JwtRequestFilter jwtRequestFilter;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

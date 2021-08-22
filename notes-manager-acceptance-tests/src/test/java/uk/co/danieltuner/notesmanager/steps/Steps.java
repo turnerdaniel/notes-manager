@@ -22,14 +22,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public abstract class Steps {
 
-  @Autowired
-  MockMvc mockMvc;
-
-  @Autowired
-  DataSource dataSource;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired private MockMvc mockMvc;
+  @Autowired private DataSource dataSource;
+  @Autowired private ObjectMapper objectMapper;
 
   protected MockHttpServletResponse get(String url) throws Exception {
     return sendRequest(MockMvcRequestBuilders.get(url));

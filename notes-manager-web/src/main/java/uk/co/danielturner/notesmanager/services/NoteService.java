@@ -2,7 +2,6 @@ package uk.co.danielturner.notesmanager.services;
 
 import java.security.Principal;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,13 @@ import uk.co.danielturner.notesmanager.repositories.NoteRepository;
 @Service
 public class NoteService {
 
-  @Autowired
-  private NoteRepository noteRepository;
+  private final NoteRepository noteRepository;
+  private final AccountRepository accountRepository;
 
-  @Autowired
-  private AccountRepository accountRepository;
+  public NoteService(NoteRepository noteRepository, AccountRepository accountRepository) {
+    this.noteRepository = noteRepository;
+    this.accountRepository = accountRepository;
+  }
 
   public Note create(Note note, Principal principal) {
     Account account = accountRepository.findByUsername(principal.getName())
