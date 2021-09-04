@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
 import uk.co.danielturner.notesmanager.mappers.AccountMapper;
 import uk.co.danielturner.notesmanager.models.Account;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
 import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
 import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.repositories.AccountRepository;
@@ -46,7 +46,7 @@ public class AccountService implements UserDetailsService {
     return accountMapper.convertToAccountResponse(account);
   }
 
-  public Token authenticate(AccountRequest request) {
+  public TokenResponse authenticate(AccountRequest request) {
     try {
       authenticationManager
           .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -54,7 +54,7 @@ public class AccountService implements UserDetailsService {
       throw new RuntimeException(e);
     }
     Account account = loadUserByUsername(request.getUsername());
-    return new Token(jwtHelper.generateToken(account));
+    return new TokenResponse(jwtHelper.generateToken(account));
   }
 
   public AccountResponse getDetails(Principal principal) {

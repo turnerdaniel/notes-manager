@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
 import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
 import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.services.AccountService;
@@ -81,7 +81,7 @@ class AccountControllerTest {
 
     @Test
     void returnsOkResponseOnSuccess() {
-      ResponseEntity<Token> response = accountController.authenticate(new AccountRequest());
+      ResponseEntity<TokenResponse> response = accountController.authenticate(new AccountRequest());
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

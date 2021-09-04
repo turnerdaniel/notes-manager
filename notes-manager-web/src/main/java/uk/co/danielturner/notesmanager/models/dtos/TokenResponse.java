@@ -1,12 +1,10 @@
-package uk.co.danielturner.notesmanager.models;
+package uk.co.danielturner.notesmanager.models.dtos;
 
-public class Token {
+public class TokenResponse {
 
   private String token;
 
-  public Token() {}
-
-  public Token(String token) {
+  public TokenResponse(String token) {
     this.token = token;
   }
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
 import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
 import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.services.AccountService;
@@ -36,7 +36,7 @@ public class AccountController {
   }
 
   @PostMapping("/authenticate")
-  public ResponseEntity<Token> authenticate(@RequestBody AccountRequest request) {
+  public ResponseEntity<TokenResponse> authenticate(@RequestBody AccountRequest request) {
     return ResponseEntity.ok(accountService.authenticate(request));
   }
 
