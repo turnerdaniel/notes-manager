@@ -17,13 +17,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import uk.co.danielturner.notesmanager.errors.NoteNotFoundException;
+import uk.co.danielturner.notesmanager.mappers.NoteMapper;
 import uk.co.danielturner.notesmanager.models.Account;
 import uk.co.danielturner.notesmanager.models.Note;
+import uk.co.danielturner.notesmanager.models.dtos.NoteRequest;
 import uk.co.danielturner.notesmanager.repositories.AccountRepository;
 import uk.co.danielturner.notesmanager.repositories.NoteRepository;
 
@@ -35,8 +38,9 @@ class NoteServiceTest {
   @Mock private NoteRepository noteRepository;
   @Mock private Principal principal;
   @Mock private AccountRepository accountRepository;
-
+  @Mock private NoteMapper noteMapper;
   @InjectMocks private NoteService noteService;
+  @Captor private ArgumentCaptor<Note> noteCaptor;
 
   @BeforeEach
   void setup() {
@@ -44,24 +48,27 @@ class NoteServiceTest {
   }
 
   @Nested
-  class NoteCreation {
-    @Test
-    void callsSaveFromRepository() {
-      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(new Account()));
-      final Note note = new Note();
+  class CreateNote {
 
-      noteService.create(note, principal);
+    @Test
+    void noteIsSavedToRepository() {
+      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(new Account()));
+      Note note = new Note();
+      when(noteMapper.convertToNote(any(NoteRequest.class))).thenReturn(note);
+      final NoteRequest request = new NoteRequest();
+
+      noteService.create(request, principal);
 
       verify(noteRepository).save(note);
     }
 
     @Test
-    void attachesAccountToNoteDuringSave() {
-      ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
+    void attachesCorrectAccountToNote() {
+      when(noteMapper.convertToNote(any(NoteRequest.class))).thenReturn(new Note());
       final Account account = new Account();
       when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(account));
 
-      noteService.create(new Note(), principal);
+      noteService.create(new NoteRequest(), principal);
 
       verify(noteRepository).save(noteCaptor.capture());
       assertThat(noteCaptor.getValue().getAccount()).isEqualTo(account);
@@ -72,7 +79,7 @@ class NoteServiceTest {
       when(accountRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
       assertThatExceptionOfType(UsernameNotFoundException.class)
-          .isThrownBy(() -> noteService.create(new Note(), principal));
+          .isThrownBy(() -> noteService.create(new NoteRequest(), principal));
     }
   }
 
@@ -87,7 +94,7 @@ class NoteServiceTest {
   }
 
   @Nested
-  class RetrieveASingleNote {
+  class RetrieveSingleNote {
     @Test
     void callsFindByIdAndAccountFromRepository() {
       when(noteRepository.findByIdAndAccount_Username(anyLong(), anyString()))
@@ -109,7 +116,7 @@ class NoteServiceTest {
   }
 
   @Nested
-  class UpdateASingleNote {
+  class UpdateSingleNote {
 
     @BeforeEach
     void setup() {
@@ -122,36 +129,38 @@ class NoteServiceTest {
     void callsFindByIdAndAccountFromRepository() {
       final long id = 1;
 
-      noteService.updateById(id, new Note(), principal);
+      noteService.updateById(id, new NoteRequest(), principal);
 
       verify(noteRepository).findByIdAndAccount_Username(id, USERNAME);
     }
 
     @Test
     void callsSaveFromRepository() {
-      noteService.updateById(1L, new Note(), principal);
+      noteService.updateById(1L, new NoteRequest(), principal);
 
       verify(noteRepository).save(any(Note.class));
     }
 
     @Test
-    void returnsUpdatedNoteWithCorrectTitle() {
+    void callsSaveWithCorrectTitle() {
       final String title = "Title";
-      final Note note = new Note(title,"");
+      final NoteRequest request = new NoteRequest.Builder().withTitle(title).build();
 
-      Note response = noteService.updateById(1L, note, principal);
+      noteService.updateById(1L, request, principal);
 
-      assertThat(response.getTitle()).isEqualTo(title);
+      verify(noteRepository).save(noteCaptor.capture());
+      assertThat(noteCaptor.getValue().getTitle()).isEqualTo(title);
     }
 
     @Test
-    void returnsUpdatedNoteWithCorrectDescription() {
-      final String description = "Title";
-      final Note note = new Note("",description);
+    void callsSaveWithCorrectDescription() {
+      final String description = "Description";
+      final NoteRequest request = new NoteRequest.Builder().withDescription(description).build();
 
-      Note response = noteService.updateById(1L, note, principal);
+      noteService.updateById(1L, request, principal);
 
-      assertThat(response.getDescription()).isEqualTo(description);
+      verify(noteRepository).save(noteCaptor.capture());
+      assertThat(noteCaptor.getValue().getDescription()).isEqualTo(description);
     }
 
     @Test
@@ -160,12 +169,12 @@ class NoteServiceTest {
           .thenReturn(Optional.empty());
 
       assertThatExceptionOfType(NoteNotFoundException.class)
-          .isThrownBy(() -> noteService.updateById(-1L, new Note(), principal));
+          .isThrownBy(() -> noteService.updateById(-1L, new NoteRequest(), principal));
     }
   }
 
   @Nested
-  class DeleteASingleNote {
+  class DeleteSingleNote {
 
     @BeforeEach
     void setup() {

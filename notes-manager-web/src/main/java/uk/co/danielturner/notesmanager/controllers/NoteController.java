@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import uk.co.danielturner.notesmanager.models.Note;
+import uk.co.danielturner.notesmanager.models.dtos.NoteResponse;
+import uk.co.danielturner.notesmanager.models.dtos.NoteRequest;
 import uk.co.danielturner.notesmanager.services.NoteService;
 
 @RestController
@@ -27,32 +28,32 @@ public class NoteController {
   }
 
   @PostMapping("/notes")
-  public ResponseEntity<Note> createNote(@RequestBody Note note, Principal principal) {
-    final Note createdNote = noteService.create(note, principal);
+  public ResponseEntity<NoteResponse> createNote(@RequestBody NoteRequest request, Principal principal) {
+    final NoteResponse response = noteService.create(request, principal);
     final URI uri = MvcUriComponentsBuilder
         .fromController(NoteController.class)
         .pathSegment("notes", "{id}")
-        .build(createdNote.getId());
-    return ResponseEntity.created(uri).body(createdNote);
+        .build(response.getId());
+    return ResponseEntity.created(uri).body(response);
   }
 
   @GetMapping("/notes")
-  public ResponseEntity<List<Note>> getAllNotes(Principal principal) {
+  public ResponseEntity<List<NoteResponse>> getAllNotes(Principal principal) {
     return ResponseEntity.ok(noteService.getAll(principal));
   }
 
   @GetMapping("/notes/{id}")
-  public ResponseEntity<Note> getNoteById(@PathVariable Long id, Principal principal) {
+  public ResponseEntity<NoteResponse> getNoteById(@PathVariable Long id, Principal principal) {
     return ResponseEntity.ok(noteService.getById(id, principal));
   }
 
   @PutMapping("/notes/{id}")
-  public ResponseEntity<Note> updateNoteById(@PathVariable Long id, @RequestBody Note note, Principal principal) {
-    return ResponseEntity.ok(noteService.updateById(id, note, principal));
+  public ResponseEntity<NoteResponse> updateNoteById(@PathVariable Long id, @RequestBody NoteRequest request, Principal principal) {
+    return ResponseEntity.ok(noteService.updateById(id, request, principal));
   }
 
   @DeleteMapping("/notes/{id}")
-  public ResponseEntity<Note> deleteNoteById(@PathVariable Long id, Principal principal) {
+  public ResponseEntity<Void> deleteNoteById(@PathVariable Long id, Principal principal) {
     noteService.deleteById(id, principal);
     return ResponseEntity.noContent().build();
   }
