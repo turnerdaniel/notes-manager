@@ -47,11 +47,8 @@ public class Note {
   }
 
   public Note(String title, String description) {
-    Date now = new Date();
     setTitle(title);
     setDescription(description);
-    this.createdAt = now;
-    this.updatedAt = now;
   }
 
   public long getId() {

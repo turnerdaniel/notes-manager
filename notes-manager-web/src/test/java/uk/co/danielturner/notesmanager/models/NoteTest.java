@@ -56,20 +56,4 @@ class NoteTest {
 
     assertThat(note.getDescription()).isNotNull();
   }
-
-  @Test
-  void setsCreatedAtToCurrentTime() {
-    final Date now = new Date();
-    Note note = new Note("", "");
-
-    assertThat(note.getCreatedAt()).isCloseTo(now, 5000);
-  }
-
-  @Test
-  void setsUpdatedAtToCurrentTime() {
-    final Date now = new Date();
-    Note note = new Note("", "");
-
-    assertThat(note.getUpdatedAt()).isCloseTo(now, 5000);
-  }
 }
