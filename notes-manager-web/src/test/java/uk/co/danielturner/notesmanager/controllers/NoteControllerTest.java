@@ -20,7 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.co.danielturner.notesmanager.models.Note;
+import uk.co.danielturner.notesmanager.models.dtos.NoteResponse;
+import uk.co.danielturner.notesmanager.models.dtos.NoteRequest;
 import uk.co.danielturner.notesmanager.services.NoteService;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,14 +29,13 @@ class NoteControllerTest {
 
   @Mock private NoteService noteService;
   @Mock private Principal principal;
-
   @InjectMocks private NoteController noteController;
 
   @Nested
   class NoteCreation {
     @BeforeEach
     void setup() {
-      when(noteService.create(any(Note.class), any(Principal.class))).thenReturn(new Note());
+      when(noteService.create(any(NoteRequest.class), any(Principal.class))).thenReturn(new NoteResponse());
 
       MockHttpServletRequest request = new MockHttpServletRequest();
       RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
@@ -48,7 +48,7 @@ class NoteControllerTest {
 
     @Test
     void callsCreateFromService() {
-      final Note note = new Note();
+      final NoteRequest note = new NoteRequest();
 
       noteController.createNote(note, principal);
 
@@ -57,14 +57,14 @@ class NoteControllerTest {
 
     @Test
     void returnsCreatedResponseOnSuccess() {
-      ResponseEntity<Note> response = noteController.createNote(new Note(), principal);
+      ResponseEntity<NoteResponse> response = noteController.createNote(new NoteRequest(), principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
     void returnsLocationHeaderOnSuccess() {
-      ResponseEntity<Note> response = noteController.createNote(new Note(), principal);
+      ResponseEntity<NoteResponse> response = noteController.createNote(new NoteRequest(), principal);
 
       assertThat(response.getHeaders().getLocation()).isNotNull();
     }
@@ -81,7 +81,7 @@ class NoteControllerTest {
 
     @Test
     void returnsOkResponseOnSuccess() {
-      ResponseEntity<List<Note>> response = noteController.getAllNotes(principal);
+      ResponseEntity<List<NoteResponse>> response = noteController.getAllNotes(principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -102,7 +102,7 @@ class NoteControllerTest {
     void returnsOkResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity<Note> response = noteController.getNoteById(id, principal);
+      ResponseEntity<NoteResponse> response = noteController.getNoteById(id, principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -113,7 +113,7 @@ class NoteControllerTest {
     @Test
     void callsUpdateNoteByIdFromService() {
       final long id = 1;
-      final Note note = new Note();
+      final NoteRequest note = new NoteRequest();
 
       noteController.updateNoteById(id, note, principal);
 
@@ -124,7 +124,7 @@ class NoteControllerTest {
     void returnsOkResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity<Note> response = noteController.updateNoteById(id, new Note(), principal);
+      ResponseEntity<NoteResponse> response = noteController.updateNoteById(id, new NoteRequest(), principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -145,7 +145,7 @@ class NoteControllerTest {
     void returnsNoContentResponseOnSuccess() {
       final long id = 1;
 
-      ResponseEntity<Note> response = noteController.deleteNoteById(id, principal);
+      ResponseEntity<?> response = noteController.deleteNoteById(id, principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }

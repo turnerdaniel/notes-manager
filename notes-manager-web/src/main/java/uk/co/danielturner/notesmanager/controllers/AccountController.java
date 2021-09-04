@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import uk.co.danielturner.notesmanager.models.Account;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
+import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
+import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.services.AccountService;
 
 @RestController
@@ -24,23 +25,23 @@ public class AccountController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<Account> register(@RequestBody Account account) {
-    final Account createdAccount = accountService.create(account);
+  public ResponseEntity<AccountResponse> register(@RequestBody AccountRequest request) {
+    final AccountResponse response = accountService.create(request);
     final URI uri = MvcUriComponentsBuilder
         .fromController(AccountController.class)
         .pathSegment("account")
         .build()
         .toUri();
-    return ResponseEntity.created(uri).body(createdAccount);
+    return ResponseEntity.created(uri).body(response);
   }
 
   @PostMapping("/authenticate")
-  public ResponseEntity<Token> authenticate(@RequestBody Account account) {
-    return ResponseEntity.ok(accountService.authenticate(account));
+  public ResponseEntity<TokenResponse> authenticate(@RequestBody AccountRequest request) {
+    return ResponseEntity.ok(accountService.authenticate(request));
   }
 
   @GetMapping("/account")
-  public ResponseEntity<Account> accountDetails(Principal principal) {
+  public ResponseEntity<AccountResponse> accountDetails(Principal principal) {
     return ResponseEntity.ok(accountService.getDetails(principal));
   }
 }

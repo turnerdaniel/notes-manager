@@ -1,6 +1,8 @@
 package uk.co.danielturner.notesmanager.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +27,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
+import uk.co.danielturner.notesmanager.mappers.AccountMapper;
 import uk.co.danielturner.notesmanager.models.Account;
+import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
 import uk.co.danielturner.notesmanager.repositories.AccountRepository;
 import uk.co.danielturner.notesmanager.utils.JwtHelper;
 
@@ -35,6 +41,7 @@ class AccountServiceTest {
   @Mock private AuthenticationManager authenticationManager;
   @Mock private JwtHelper jwtHelper;
   @Mock private Principal principal;
+  @Mock private AccountMapper accountMapper;
   @InjectMocks private AccountService accountService;
 
   @Nested
@@ -42,7 +49,7 @@ class AccountServiceTest {
 
     @Test
     void callsFindByUsernameFromRepository() {
-      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(validAccount()));
+      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(new Account()));
       final String username = "example";
 
       accountService.loadUserByUsername(username);
@@ -64,21 +71,31 @@ class AccountServiceTest {
 
     @Test
     void callsSaveFromRepository() {
-      Account account = validAccount();
+      AccountRequest request = validAccountRequest();
 
-      accountService.create(account);
+      accountService.create(request);
 
       verify(accountRepository).save(any(Account.class));
     }
 
     @Test
     void encodesPasswordUsingEncoder() {
-      Account account = validAccount();
-      String password = account.getPassword();
+      AccountRequest request = validAccountRequest();
+      String password = request.getPassword();
 
-      accountService.create(account);
+      accountService.create(request);
 
       verify(passwordEncoder).encode(password);
+    }
+
+    @Test
+    void callsAccountMapperWhenReturningValue() {
+      when(accountRepository.save(any(Account.class))).then(returnsFirstArg());
+      AccountRequest request = validAccountRequest();
+
+      accountService.create(request);
+
+      verify(accountMapper).convertToAccountResponse(any(Account.class));
     }
 
     @Test
@@ -86,7 +103,7 @@ class AccountServiceTest {
       DataIntegrityViolationException exception = new DataIntegrityViolationException("");
       when(accountRepository.save(any(Account.class))).thenThrow(exception);
 
-      assertThatThrownBy(() -> accountService.create(validAccount()))
+      assertThatThrownBy(() -> accountService.create(validAccountRequest()))
           .isInstanceOf(UsernameAlreadyExistsException.class)
           .hasCause(exception);
     }
@@ -95,23 +112,25 @@ class AccountServiceTest {
   @Nested
   class Authenticate {
 
+    @Captor ArgumentCaptor<UsernamePasswordAuthenticationToken> tokenCaptor;
+
     @Test
     void callsAuthenticationManager() {
-      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(validAccount()));
-      Account account = validAccount();
+      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(new Account()));
+      AccountRequest request = validAccountRequest();
 
-      accountService.authenticate(account);
-      UsernamePasswordAuthenticationToken token =
-          new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword());
+      accountService.authenticate(request);
 
-      verify(authenticationManager).authenticate(token);
+      verify(authenticationManager).authenticate(tokenCaptor.capture());
+      assertThat(tokenCaptor.getValue().getPrincipal()).hasToString(request.getUsername());
+      assertThat(tokenCaptor.getValue().getCredentials()).hasToString(request.getPassword());
     }
 
     @Test
     void callsTokenHelper() {
-      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(validAccount()));
+      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(new Account()));
 
-      accountService.authenticate(validAccount());
+      accountService.authenticate(validAccountRequest());
 
       verify(jwtHelper).generateToken(any(Account.class));
     }
@@ -122,7 +141,7 @@ class AccountServiceTest {
       when(authenticationManager.authenticate(any(Authentication.class)))
           .thenThrow(exception);
 
-      assertThatThrownBy(() -> accountService.authenticate(validAccount()))
+      assertThatThrownBy(() -> accountService.authenticate(validAccountRequest()))
           .isInstanceOf(RuntimeException.class)
           .hasCause(exception);
     }
@@ -155,12 +174,23 @@ class AccountServiceTest {
       assertThatThrownBy(() -> accountService.getDetails(principal))
           .isInstanceOf(UsernameNotFoundException.class);
     }
+
+    @Test
+    void callsAccountMapperWhenReturningValue() {
+      when(principal.getName()).thenReturn(USERNAME);
+      Account account = new Account();
+      when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(account));
+
+      accountService.getDetails(principal);
+
+      verify(accountMapper).convertToAccountResponse(account);
+    }
   }
 
-  private static Account validAccount() {
-    return new Account.Builder()
-        .withUsername("example@company.com")
-        .withPassword("passWORD")
-        .build();
+  private static AccountRequest validAccountRequest() {
+    AccountRequest request = new AccountRequest();
+    request.setUsername("example@company.com");
+    request.setPassword("passWORD");
+    return request;
   }
 }

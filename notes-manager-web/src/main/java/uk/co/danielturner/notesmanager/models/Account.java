@@ -1,7 +1,5 @@
 package uk.co.danielturner.notesmanager.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -25,9 +23,7 @@ public class Account implements UserDetails {
   @Column(unique = true)
   String username;
 
-  @JsonProperty(access = Access.WRITE_ONLY)
   String password;
-
   GrantedAuthority role = new SimpleGrantedAuthority("ROLE_USER");
   boolean enabled = true;
   boolean accountNonExpired = true;

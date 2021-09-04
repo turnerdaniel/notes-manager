@@ -1,6 +1,5 @@
 package uk.co.danielturner.notesmanager.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +37,6 @@ public class Note {
   @UpdateTimestamp
   private Date updatedAt;
 
-  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "accounts_id")
   private Account account;
@@ -49,11 +47,8 @@ public class Note {
   }
 
   public Note(String title, String description) {
-    Date now = new Date();
     setTitle(title);
     setDescription(description);
-    this.createdAt = now;
-    this.updatedAt = now;
   }
 
   public long getId() {

@@ -1,9 +1,7 @@
 package uk.co.danielturner.notesmanager.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import org.junit.jupiter.api.AfterEach;
@@ -19,9 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.co.danielturner.notesmanager.models.Account;
-import uk.co.danielturner.notesmanager.models.Note;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
+import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
+import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.services.AccountService;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,23 +45,23 @@ class AccountControllerTest {
 
     @Test
     void callsCreateFromService() {
-      Account account = new Account();
+      AccountRequest request = new AccountRequest();
 
-      accountController.register(account);
+      accountController.register(request);
 
-      verify(accountService).create(account);
+      verify(accountService).create(request);
     }
 
     @Test
     void returnsCreatedResponseOnSuccess() {
-      ResponseEntity<Account> response = accountController.register(new Account());
+      ResponseEntity<AccountResponse> response = accountController.register(new AccountRequest());
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
     void returnsLocationHeaderOnSuccess() {
-      ResponseEntity<Account> response = accountController.register(new Account());
+      ResponseEntity<AccountResponse> response = accountController.register(new AccountRequest());
 
       assertThat(response.getHeaders().getLocation().toString()).endsWith("/v2/account");
     }
@@ -74,16 +72,16 @@ class AccountControllerTest {
 
     @Test
     void callsAuthenticateFromService() {
-      Account account = new Account();
+      AccountRequest request = new AccountRequest();
 
-      accountController.authenticate(account);
+      accountController.authenticate(request);
 
-      verify(accountService).authenticate(account);
+      verify(accountService).authenticate(request);
     }
 
     @Test
     void returnsOkResponseOnSuccess() {
-      ResponseEntity<Token> response = accountController.authenticate(new Account());
+      ResponseEntity<TokenResponse> response = accountController.authenticate(new AccountRequest());
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -101,7 +99,7 @@ class AccountControllerTest {
 
     @Test
     void returnsOkResponseOnSuccess() {
-      ResponseEntity<Account> response = accountController.accountDetails(principal);
+      ResponseEntity<AccountResponse> response = accountController.accountDetails(principal);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

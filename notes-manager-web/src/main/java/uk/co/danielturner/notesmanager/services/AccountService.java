@@ -10,8 +10,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
+import uk.co.danielturner.notesmanager.mappers.AccountMapper;
 import uk.co.danielturner.notesmanager.models.Account;
-import uk.co.danielturner.notesmanager.models.Token;
+import uk.co.danielturner.notesmanager.models.dtos.TokenResponse;
+import uk.co.danielturner.notesmanager.models.dtos.AccountRequest;
+import uk.co.danielturner.notesmanager.models.dtos.AccountResponse;
 import uk.co.danielturner.notesmanager.repositories.AccountRepository;
 import uk.co.danielturner.notesmanager.utils.JwtHelper;
 
@@ -22,6 +25,7 @@ public class AccountService implements UserDetailsService {
   @Autowired private AuthenticationManager authenticationManager;
   @Autowired private JwtHelper jwtHelper;
   @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private AccountMapper accountMapper;
 
   @Override
   public Account loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,32 +33,33 @@ public class AccountService implements UserDetailsService {
         .orElseThrow(() -> new UsernameNotFoundException(""));
   }
 
-  public Account create(Account account) {
+  public AccountResponse create(AccountRequest request) {
+    Account account = new Account.Builder()
+        .withUsername(request.getUsername())
+        .withPassword(passwordEncoder.encode(request.getPassword()))
+        .build();
     try {
-      return accountRepository.save(new Account
-          .Builder()
-          .withUsername(account.getUsername())
-          .withPassword(passwordEncoder.encode(account.getPassword()))
-          .build());
+      account = accountRepository.save(account);
     } catch (DataIntegrityViolationException e) {
       throw new UsernameAlreadyExistsException(e);
     }
+    return accountMapper.convertToAccountResponse(account);
   }
 
-  public Token authenticate(Account account) {
+  public TokenResponse authenticate(AccountRequest request) {
     try {
-      authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
+      authenticationManager
+          .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
-    Account user = loadUserByUsername(account.getUsername());
-    return new Token(jwtHelper.generateToken(user));
+    Account account = loadUserByUsername(request.getUsername());
+    return new TokenResponse(jwtHelper.generateToken(account));
   }
 
-  public Account getDetails(Principal principal) {
-    return accountRepository.findByUsername(principal.getName())
+  public AccountResponse getDetails(Principal principal) {
+    Account account = accountRepository.findByUsername(principal.getName())
         .orElseThrow(() -> new UsernameNotFoundException(""));
+    return accountMapper.convertToAccountResponse(account);
   }
 }
