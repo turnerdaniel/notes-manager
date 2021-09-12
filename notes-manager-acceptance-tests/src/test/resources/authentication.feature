@@ -24,7 +24,6 @@ Feature: The API can reject calls from unauthenticated users
     When the client sends an unauthenticated request for account details
     Then The client should get a 403 response
 
-  @bug
   Scenario: Cannot authenticate with a malformed bearer token
     Given an existing user account
     And the client has authenticated

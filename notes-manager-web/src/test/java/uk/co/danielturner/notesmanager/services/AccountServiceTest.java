@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import uk.co.danielturner.notesmanager.errors.AccountNotFoundException;
 import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
 import uk.co.danielturner.notesmanager.mappers.AccountMapper;
 import uk.co.danielturner.notesmanager.models.Account;
@@ -45,7 +47,7 @@ class AccountServiceTest {
   @InjectMocks private AccountService accountService;
 
   @Nested
-  class LoadUser {
+  class LoadUserByUsername {
 
     @Test
     void callsFindByUsernameFromRepository() {
@@ -63,6 +65,29 @@ class AccountServiceTest {
 
       assertThatThrownBy(() -> accountService.loadUserByUsername("example"))
           .isInstanceOf(UsernameNotFoundException.class);
+    }
+  }
+
+  @Nested
+  class LoadUserById {
+    @Test
+    void callsFindByIdFromRepository() {
+      when(accountRepository.findById(any(UUID.class))).thenReturn(Optional.of(new Account()));
+      final UUID id = UUID.randomUUID();
+
+      accountService.loadUserById(id);
+
+      verify(accountRepository).findById(id);
+    }
+
+    @Test
+    void throwsAccountNotFoundExceptionWhenUserDoesNotExist() {
+      when(accountRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+      final UUID id = UUID.randomUUID();
+
+      assertThatThrownBy(() -> accountService.loadUserById(id))
+          .isInstanceOf(AccountNotFoundException.class)
+          .hasMessageContaining(id.toString());
     }
   }
 

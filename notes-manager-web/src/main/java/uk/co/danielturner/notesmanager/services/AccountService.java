@@ -1,6 +1,7 @@
 package uk.co.danielturner.notesmanager.services;
 
 import java.security.Principal;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uk.co.danielturner.notesmanager.errors.AccountNotFoundException;
 import uk.co.danielturner.notesmanager.errors.UsernameAlreadyExistsException;
 import uk.co.danielturner.notesmanager.mappers.AccountMapper;
 import uk.co.danielturner.notesmanager.models.Account;
@@ -31,6 +33,10 @@ public class AccountService implements UserDetailsService {
   public Account loadUserByUsername(String username) throws UsernameNotFoundException {
     return accountRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException(""));
+  }
+
+  public Account loadUserById(UUID id) {
+    return accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
   }
 
   public AccountResponse create(AccountRequest request) {
